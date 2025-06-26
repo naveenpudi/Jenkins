@@ -1,0 +1,32 @@
+pipeline {
+    agent any
+
+    stages {
+        stage('Clone') {
+            steps {
+                git 'https://github.com/naveenpudi/Jenkins.git'
+            }
+        }
+
+        stage('Build Docker Image') {
+            steps {
+                script {
+                    docker.build('ecommerce-app')
+                }
+            }
+        }
+
+        stage('Run Container') {
+            steps {
+                script {
+                    // Stop and remove existing container
+                    sh 'docker rm -f ecommerce-container || true'
+
+                    // Run new container
+                    sh 'docker run -d -p 5000:5000 --name ecommerce-container ecommerce-app'
+                }
+            }
+        }
+    }
+}
+
